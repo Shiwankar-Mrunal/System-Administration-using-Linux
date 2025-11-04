@@ -48,7 +48,7 @@ echo "print stopped services variable: $stopped_services"
     # attempt=1
     # success=0
 
-shopt -s nullglob    # while [ $attempt -le 3 ]; do
+#shopt -s nullglob    # while [ $attempt -le 3 ]; do
     #     echo " Attempt $attempt to start $service..."
     #     sudo systemctl start "$service" 2>/dev/null
     #     echo "started $service, checking status..."
@@ -92,8 +92,8 @@ echo "------ FAILED SERVICES ------"
     du -sh /home/$USER
     echo
 
-    echo "-------- privete Ip addresses --------"
-    ip addr show scope global | grep inet | awk '{print $2}'
+    # echo "-------- privete Ip addresses --------"
+    # ip addr show scope global | grep inet | awk '{print $2}'
 
     # echo "--------public Ip address --------"
     # wget -q0- ifconfig.me 
@@ -113,10 +113,17 @@ echo "------ FAILED SERVICES ------"
 
 } >> "$reportFile"
 
+# echo "-------- privete Ip addresses --------"
+#     hostname -I scope global | grep inet | awk '{print $2}' >> "$localDir/private_ip.txt"
+#     echo " Private IP addresses saved to $localDir/private_ip.txt"
 
-echo "-------- privete Ip addresses --------"
-    ip addr show >> "$localDir/private_ip.txt"
-    echo " Private IP addresses saved to $localDir/private_ip.txt"
+hostname -I >> "$localDir/private_ip.txt"
+echo " Private IP addresses saved to $localDir/private_ip.txt"
+
+
+# echo "-------- privete Ip addresses --------"
+#     hostname -I >> "$localDir/private_ip.txt"
+#     echo " Private IP addresses saved to $localDir/private_ip.txt"
 
 # ---- Public Ip address -------
 
