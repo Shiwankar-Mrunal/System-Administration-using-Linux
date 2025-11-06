@@ -16,7 +16,7 @@ jobs:
       
       - name: Bash script syntax check
         run: |
-          if bash -n bashscript/version4.sh; then
+          if bash -n bashscript/SystemMonitoring.sh; then
             echo "No Syntax Error"
           else
             echo "Syntax Error"
