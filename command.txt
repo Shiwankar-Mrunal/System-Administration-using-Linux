@@ -23,3 +23,7 @@ chmod +x script.sh
         dig +short myip.opendns.com @resolver1.opendns.com
 
 
+
+
+/home/root/zipped_reports/home/root/local-reports
+unzip service_report_20251106134843.zip
