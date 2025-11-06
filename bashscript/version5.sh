@@ -13,8 +13,8 @@ echo "Moving ZIP files from $zipFolder to $zipArchive..."
 shopt -s nullglob
 for zipFile in "$zipFolder"/*.zip; do
     mv "$zipFile" "$zipArchive/"
-    # echo "Moved $(basename "$zipFile") to $zipArchive"
-    echo "Error: Failed to move information."
+    echo "Moved $(basename "$zipFile") to $zipArchive"
+    # echo "Error: Failed to move information."
     exit 1   
 done
 shopt -u nullglob
@@ -30,16 +30,12 @@ echo "==============================================" >> "$reportFile"
 if ! command -v systemctl &> /dev/null; then
     echo "Error: systemctl not found. This script requires systemd." >> "$reportFile"
     exit 1
-fi
 
-{
     echo "------ RUNNING SERVICES ------"
-    systemctl list-unitssss --type=service --state=running --no-pager --no-legend \
-        | awk '{print $1 "\t" $4}' | sort || {
+    systemctl list-units  --no-pager --no-legend \
+        | awk '{print $1 "\t" $4}' | sort || >> "$localDir/running_services.txt" {
             echo "Error: Failed to list running services." 
-            exit 1
-        }
-    echo
+            exit 1 }
 
     echo "------ STOPPED SERVICES ------"
 stopped_services=$(systemctl list-units --type=service --state=inactive --no-pager --no-legend \
@@ -71,7 +67,7 @@ echo "------ FAILED SERVICES ------"
     if df -b >> "$reportFile"; then
     	echo "Disk usage information added successfully." >> "$reportFile"
     else
-        echo "Error: Failed to retrieve disk usage information." >> "$output"
+        echo "Error: Failed to retrieve disk usage information." >> "$reportFile"
     fi
     echo >> "$reportFile"
 
@@ -110,11 +106,6 @@ echo "------ FAILED SERVICES ------"
         echo "You may need to restart the parent process (PPID) to clean them."
     fi
     echo
-
-} >> "$reportFile" || {
-    echo "Error: Failed to write system report to $reportFile."
-    exit 1
-}
 
 # echo "-------- privete Ip addresses --------"
 #     hostname -I scope global | grep inet | awk '{print $2}' >> "$localDir/private_ip.txt"
@@ -158,3 +149,5 @@ else
     echo " Failed to create ZIP file. Exiting script."
     exit 1
 fi
+
+# check 

@@ -4,6 +4,7 @@
 localDir="/home/$USER/local-reports"
 zipFolder="/home/$USER/zipped_reports"
 zipArchive="/home/$USER/zipArchive"
+output="/System_Administration_BASH/bashscript"
 
 echo "printing localDir: $localDir"
 mkdir -p "$localDir" "$zipFolder" "$zipArchive"
@@ -13,9 +14,7 @@ echo "Moving ZIP files from $zipFolder to $zipArchive..."
 shopt -s nullglob
 for zipFile in "$zipFolder"/*.zip; do
     mv "$zipFile" "$zipArchive/"
-    # echo "Moved $(basename "$zipFile") to $zipArchive"
-    echo "Error: Failed to move information."
-    exit 1   
+    echo "Moved $(basename "$zipFile") to $zipArchive"
 done
 shopt -u nullglob
 
@@ -34,29 +33,45 @@ fi
 
 {
     echo "------ RUNNING SERVICES ------"
-    systemctl list-unitssss --type=service --state=running --no-pager --no-legend \
-        | awk '{print $1 "\t" $4}' | sort || {
-            echo "Error: Failed to list running services." 
-            exit 1
-        }
+    systemctl list-units --type=service --state=running --no-pager --no-legend \
+        | awk '{print $1 "\t" $4}' | sort
     echo
 
     echo "------ STOPPED SERVICES ------"
 stopped_services=$(systemctl list-units --type=service --state=inactive --no-pager --no-legend \
     | awk '{print $1}' | grep '\.service$' | sed '/^$/d' \
-    | grep -Ev '^(initrd-|systemd-hibernate|systemd-hybrid-sleep|systemd-suspend|emergency|rescue|reboot|halt|poweroff|kexec|systemd-shutdown)' ) || {
-        echo "Error: Failed to list stopped services."
-        exit 1
-    }
+    | grep -Ev '^(initrd-|systemd-hibernate|systemd-hybrid-sleep|systemd-suspend|emergency|rescue|reboot|halt|poweroff|kexec|systemd-shutdown)' )
 
 echo "print stopped services variable: $stopped_services"
+#for service in $stopped_services; do
+    #echo " $service is stopped. Attempting to start up to 3 times..."
+
+    # attempt=1
+    # success=0
+
+#shopt -s nullglob    # while [ $attempt -le 3 ]; do
+    #     echo " Attempt $attempt to start $service..."
+    #     sudo systemctl start "$service" 2>/dev/null
+    #     echo "started $service, checking status..."
+    #     sleep 5
+
+    #     if systemctl is-active --quiet "$service"; then
+    #         echo " $service started successfully on attempt $attempt."
+    #         success=1
+    #         break
+    #     fi
+    #     attempt=$((attempt + 1))
+    # done
+
+    # if [ $success -eq 0 ]; then
+    #     echo " $service is still in stopped state after 3 attempts."
+    # fi
+    # echo
+#done
 
 echo "------ FAILED SERVICES ------"
     systemctl list-units --type=service --state=failed --no-pager --no-legend \
-        | awk '{print $1 "\t" $4}' | sort || {
-            echo "Error: Failed to list failed services."
-            exit 1
-        }
+        | awk '{print $1 "\t" $4}' | sort
     echo
 
     echo "=============================================="
@@ -76,17 +91,11 @@ echo "------ FAILED SERVICES ------"
     echo >> "$reportFile"
 
     echo "------ BLOCK DEVICES (lsblk) ------"
-    lsblk || {
-        echo "Error: Failed to list block devices."
-        exit 1
-    }
+    lsblk
     echo
 
     echo "------ STORAGE USAGE OF HOME DIRECTORY ------"
-    du -sh /home/$USER || {
-        echo "Error: Failed to get storage usage of home directory."
-        exit 1
-    }
+    du -sh /home/$USER
     echo
 
     # echo "-------- privete Ip addresses --------"
@@ -96,10 +105,7 @@ echo "------ FAILED SERVICES ------"
     # wget -q0- ifconfig.me 
 
     echo "------ ZOMBIE PROCESSES ------"
-    zombies=$(ps -eo pid,ppid,state,cmd | awk '$3=="Z"') || {
-        echo "Error: Failed to check for zombie processes."
-        exit 1
-    }
+    zombies=$(ps -eo pid,ppid,state,cmd | awk '$3=="Z"')
     if [ -z "$zombies" ]; then
         echo " No zombie processes found."
     else
@@ -111,10 +117,7 @@ echo "------ FAILED SERVICES ------"
     fi
     echo
 
-} >> "$reportFile" || {
-    echo "Error: Failed to write system report to $reportFile."
-    exit 1
-}
+} >> "$reportFile"
 
 # echo "-------- privete Ip addresses --------"
 #     hostname -I scope global | grep inet | awk '{print $2}' >> "$localDir/private_ip.txt"
