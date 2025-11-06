@@ -42,31 +42,7 @@ stopped_services=$(systemctl list-units --type=service --state=inactive --no-pag
     | grep -Ev '^(initrd-|systemd-hibernate|systemd-hybrid-sleep|systemd-suspend|emergency|rescue|reboot|halt|poweroff|kexec|systemd-shutdown)' )
 
 echo "print stopped services variable: $stopped_services"
-#for service in $stopped_services; do
-    #echo " $service is stopped. Attempting to start up to 3 times..."
 
-    # attempt=1
-    # success=0
-
-#shopt -s nullglob    # while [ $attempt -le 3 ]; do
-    #     echo " Attempt $attempt to start $service..."
-    #     sudo systemctl start "$service" 2>/dev/null
-    #     echo "started $service, checking status..."
-    #     sleep 5
-
-    #     if systemctl is-active --quiet "$service"; then
-    #         echo " $service started successfully on attempt $attempt."
-    #         success=1
-    #         break
-    #     fi
-    #     attempt=$((attempt + 1))
-    # done
-
-    # if [ $success -eq 0 ]; then
-    #     echo " $service is still in stopped state after 3 attempts."
-    # fi
-    # echo
-#done
 
 echo "------ FAILED SERVICES ------"
     systemctl list-units --type=service --state=failed --no-pager --no-legend \
@@ -92,12 +68,7 @@ echo "------ FAILED SERVICES ------"
     du -sh /home/$USER
     echo
 
-    # echo "-------- privete Ip addresses --------"
-    # ip addr show scope global | grep inet | awk '{print $2}'
-
-    # echo "--------public Ip address --------"
-    # wget -q0- ifconfig.me 
-
+    
     echo "------ ZOMBIE PROCESSES ------"
     zombies=$(ps -eo pid,ppid,state,cmd | awk '$3=="Z"')
     if [ -z "$zombies" ]; then
@@ -113,19 +84,10 @@ echo "------ FAILED SERVICES ------"
 
 } >> "$reportFile"
 
-# echo "-------- privete Ip addresses --------"
-#     hostname -I scope global | grep inet | awk '{print $2}' >> "$localDir/private_ip.txt"
-#     echo " Private IP addresses saved to $localDir/private_ip.txt"
+
 
 hostname -I >> "$localDir/private_ip.txt"
 echo " Private IP addresses saved to $localDir/private_ip.txt"
-
-
-# echo "-------- privete Ip addresses --------"
-#     hostname -I >> "$localDir/private_ip.txt"
-#     echo " Private IP addresses saved to $localDir/private_ip.txt"
-
-# ---- Public Ip address -------
 
 curl ifconfig.me >> "$localDir/public_ip.txt"
 echo " Public IP address saved to $localDir/public_ip.txt"
