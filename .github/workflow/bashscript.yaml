@@ -3,7 +3,8 @@ name : Bash Script Workflow
 on:
   push:
     branches:
-      - linux_pipeline
+      - main
+      - '/*'
 
 jobs:
   run-bash-script:
@@ -19,6 +20,10 @@ jobs:
           else
             echo "Syntax Error"
             exit 1
+
+        
+
+        
           
 
 
