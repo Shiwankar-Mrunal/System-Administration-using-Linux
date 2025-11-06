@@ -22,3 +22,13 @@ jobs:
             echo "Syntax Error"
             exit 1
           fi
+      
+      - name : check folder structure
+        run: |
+          sudo apt-get update && sudo apt-get install -y tree
+
+
+      - name: Display Folder structure
+        run: tree -L 2
+
+
