@@ -21,3 +21,4 @@ jobs:
           else
             echo "Syntax Error"
             exit 1
+          fi
